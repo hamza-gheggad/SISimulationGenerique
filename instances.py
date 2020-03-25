@@ -13,6 +13,7 @@ Sondes = []
 Subnets = []
 Firewalls = []
 Services = []
+Users = []
 
 
 for section in parser.sections():
@@ -273,6 +274,21 @@ for section in parser.sections():
                 RT.gateway = parser.getboolean(section, arg)
         Routers.append(RT)
 
+for section in parser.sections():
+    if 'user' in section:
+        user = User()
+        args = parser.options(section)
+        for arg in args:
+            if arg == 'name':
+                user.name = parser.get(section, arg)
+            if arg == 'machine':
+                Machines = Victim_Machines + Attack_Machines + Firewalls + Servers
+                for machine in Machines:
+                    if machine.IP_address == parser.get(section, arg):
+                        user.machine = machine
+        Users.append(user)
+
+
 Machines = Victim_Machines + Attack_Machines + Firewalls + Servers
 for machine in Machines:
     for subnet in Subnets:
@@ -286,3 +302,7 @@ for subnet in Subnets:
     for sonde in Sondes:
         if subnet.sonde == sonde.name:
             subnet.setSonde(sonde)
+
+
+for user in Users:
+    print(user.name, user.machine.os)

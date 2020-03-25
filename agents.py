@@ -1,6 +1,34 @@
 import logging
 
 
+class Software:
+    def __init__(self, name='NULL', version='NULL', accessRight="user", password=""):
+        self.name = name
+        self.version = version
+        self.accessRight = accessRight
+        self.password = password
+
+    def start(self):
+        pass
+
+    def exit(self):
+        pass
+
+    def root_only(self):
+        if self.accessRight == "user":
+            self.accessRight = "root"
+            logging.debug("Les droits d'accès pour {} sont désormais root.".format(self.name))
+        else:
+            print("Les droits d'accès sont déjà root only.")
+
+    def any_user(self):
+        if self.accessRight == "root":
+            self.accessRight = "user"
+            logging.debug("Les droits d'accès pour {} sont désormais user.".format(self.name))
+        else:
+            print("Les droits d'accès sont déjà user (any).")
+
+
 class Router:
     def __init__(self, name='NULL', subnetsin=[], subnetsout=[]):
         self.name = name
@@ -8,14 +36,14 @@ class Router:
         self.subnetsout = subnetsout
         self.gateway = True
 
-    def endrouting(self):
+    def endRouting(self):
         if self.gateway == True:
             self.gateway = False
             logging.debug("Le routeur {} <-> {} est arrêté.".format(self.subnetsin, self.subnetsout))
         else:
             print("Ce routeur est déjà arrêté.")
 
-    def restartrouting(self):
+    def restartRouting(self):
         if self.gateway == False:
             self.gateway = True
             logging.debug("Le routeur {} <-> {}est démarré.".format(self.subnetsin, self.subnetsout))
@@ -32,9 +60,9 @@ class Subnet:
         self.firewall = firewall
         self.IP_range = IP_range
 
-    def add_node(self, new_node):
-        self.components.append(new_node)
-        logging.debug("Le noeud {} a été ajouté au sous-réseau {}.".format(new_node.name, self.name))
+    def add_node(self, node):
+        self.components.append(node)
+        logging.debug("Le noeud {} a été ajouté au sous-réseau {}.".format(node.name, self.name))
 
     def remove_node(self, node):
         self.components.remove(node)
@@ -54,7 +82,7 @@ class File_System:
 
 
 class Vulnerability:
-    def __init__(self, name="NULL", software="NULL", trigger="NULL", action="NULL"):
+    def __init__(self, name="NULL", software=Software(), trigger="NULL", action="NULL"):
         self.name = name
         self.software = software
         self.trigger = trigger
@@ -62,7 +90,7 @@ class Vulnerability:
 
 
 class Machine:
-    def __init__(self, name='NULL', os='NULL', IP_address='NULL', installed_software=[], rights='user', subnet=Subnet(), filesystem=File_System(), booted=False, host_sonde="NULL"):
+    def __init__(self, name='NULL', os='NULL', IP_address='NULL', installed_software=[], rights='user', subnet=Subnet(), filesystem=File_System(), booted=False, host_sonde=Software()):
         self.name = name
         self.booted = booted
         self.os = os
@@ -121,7 +149,7 @@ class Machine:
 
 
 class Victim_Machine(Machine):
-    def __init__(self, name='NULL', os='NULL', IP_address='NULL', installed_software=[], rights='user', vulnerabilities=[], defense_actions=[], subnet=Subnet(), filesystem=File_System([], []), booted=False, host_sonde="NULL"):
+    def __init__(self, name='NULL', os='NULL', IP_address='NULL', installed_software=[], rights='user', vulnerabilities=[], defense_actions=[], subnet=Subnet(), filesystem=File_System([], []), booted=False, host_sonde=Software()):
         self.name = name
         self.os = os
         self.IP_address = IP_address
@@ -136,7 +164,7 @@ class Victim_Machine(Machine):
 
 
 class Attacking_Machine(Machine):
-    def __init__(self, name='NULL', os='NULL', IP_address='NULL', installed_software='NULL', rights='user', attack_actions=[], subnet=Subnet(), filesystem=File_System(), booted=False, host_sonde="NULL"):
+    def __init__(self, name='NULL', os='NULL', IP_address='NULL', installed_software='NULL', rights='user', attack_actions=[], subnet=Subnet(), filesystem=File_System(), booted=False, host_sonde=Software()):
         self.name = name
         self.os = os
         self.IP_address = IP_address
@@ -150,7 +178,7 @@ class Attacking_Machine(Machine):
 
 
 class Firewall(Machine):
-    def __init__(self, name="NULL", os="NULL", IP_address="NULL", installed_software=[], vulnerabilities=[], rights='user', rules=[], subnet=Subnet(), filesystem=File_System(), booted=False, host_sonde="NULL"):
+    def __init__(self, name="NULL", os="NULL", IP_address="NULL", installed_software=[], vulnerabilities=[], rights='user', rules=[], subnet=Subnet(), filesystem=File_System(), booted=False, host_sonde=Software()):
         self.name = name
         self.os = os
         self.IP_address = IP_address
@@ -176,7 +204,7 @@ class Firewall(Machine):
 
 
 class Server(Victim_Machine):
-    def __init__(self, name='NULL', os='NULL', IP_address='NULL', vulnerabilities=[], installed_software=[], rights='user', subnet=Subnet(), booted=False, host_sonde="NULL"):
+    def __init__(self, name='NULL', os='NULL', IP_address='NULL', vulnerabilities=[], installed_software=[], rights='user', subnet=Subnet(), booted=False, host_sonde=Software()):
         self.name = name
         self.os = os
         self.subnet = subnet
@@ -187,53 +215,31 @@ class Server(Victim_Machine):
         self.booted = booted
 
 
-class Utilisateur:
-    def __init__(self, name='NULL', Machine='NULL'):
+class User:
+    def __init__(self, name='NULL', machine=Machine()):
         self.name = name
-        self.Machine = Machine
+        self.machine = machine
 
-    def connect_to(self, Machine):
-        print("{} est connecté à {}.".format(self.name, Machine.name))
+    def connect_to(self, machine):
+        print("{} est connecté à {}.".format(self.name, machine.name))
 
 
-class Victime(Utilisateur):
-    def __init__(self, name='NULL', Victim_Machine='NULL'):
+class Victime(User):
+    def __init__(self, name='NULL', VictimMachine=Machine()):
         self.name = name
-        self.Victim_Machine = Victim_Machine
+        self.VictimMachine = VictimMachine
 
     def defend(self):
         pass
 
 
-class Attaquant(Utilisateur):
-    def __init__(self, name='NULL', Attacking_Machine='NULL'):
+class Attaquant(User):
+    def __init__(self, name='NULL', AttackingMachine=Machine()):
         self.name = name
-        self.Attacking_Machine = Attacking_Machine
+        self.AttackingMachine = AttackingMachine
 
-    def execAttack(self, attaque, Destination_Machine):
-        logging.debug("L'attaque {} est exécutée sur {}.".format(attaque, Destination_Machine))
-
-
-class Software:
-    def __init__(self, name='NULL', version='NULL', accessRight="user", password=""):
-        self.name = name
-        self.version = version
-        self.accessRight = accessRight
-        self.password = password
-
-    def root_only(self):
-        if self.accessRight == "user":
-            self.accessRight = "root"
-            logging.debug("Les droits d'accès pour {} sont désormais root.".format(self.name))
-        else:
-            print("Les droits d'accès sont déjà root only.")
-
-    def any_user(self):
-        if self.accessRight == "root":
-            self.accessRight = "user"
-            logging.debug("Les droits d'accès pour {} sont désormais user.".format(self.name))
-        else:
-            print("Les droits d'accès sont déjà user (any).")
+    def execAttack(self, attaque, DestinationMachine):
+        logging.debug("L'attaque {} est exécutée sur {}.".format(attaque, DestinationMachine))
 
 
 class HIDS(Software):

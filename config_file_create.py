@@ -71,7 +71,7 @@ config['VictimMachine1A'] = {
 }
 
 config['VictimMachine2A'] = {
-    'name': 'ordi-paul',
+    'name': 'paul',
     'os': 'Windows10',
     'IP_address': '192.168.56.2',
     'installed_software': 'Mysql3.23.33',
@@ -140,7 +140,7 @@ config['ftpServerB'] = {
     'os': 'Debian',
     'IP_address': '62.212.118.155',
     'installed_software': 'Apache2',
-    'vulnerabilities': 'apache2_vuln',
+    'vulnerabilities': 'apache2_vuln ftp_vuln',
     'booted': 'True',
     'host_sonde': '',
     'rights': 'user',
@@ -152,7 +152,7 @@ config['FirewallMachineB'] = {
     'name': 'firewallB',
     'os': 'Debian2.1',
     'IP_address': '62.212.118.100',
-    'installed_software': 'Apache2',
+    'installed_software': 'Apache2 SSH5.1',
     'vulnerabilities': 'apache2_vuln',
     'subnet': '62.212.118.0/24',
     'host_sonde': '',
@@ -243,9 +243,8 @@ config['libtiff_vuln'] = {
 }
 
 config['ftp_vuln'] = {
-    'name': 'libtiff_vuln',
-    'software': 'libtiff3.6.1',
-    'trigger': 'integeroverflow',
+    'name': 'ftp_vuln',
+    'trigger': 'dataTheft',
     'action': 'DOS'
 }
 
@@ -264,10 +263,24 @@ config['IPSec_vuln'] = {
 }
 
 
-config['Attaquant'] = {
+config['hacker-user'] = {
     'name': 'Anonymous',
-    'Attacking_Machine': 'Attacking_Machine'
+    'machine': '172.16.256.101'
+}
 
+config['alice-user'] = {
+    'name': 'alice',
+    'machine': '62.212.118.55'
+}
+
+config['bob-user'] = {
+    'name': 'bob',
+    'machine': '62.212.118.53'
+}
+
+config['paul-user'] = {
+    'name': 'paul',
+    'machine': '192.168.56.2'
 }
 
 config['Guacamole-0.6.2-software'] = {
