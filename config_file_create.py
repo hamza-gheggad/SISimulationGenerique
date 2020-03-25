@@ -74,10 +74,10 @@ config['VictimMachine2A'] = {
     'name': 'ordi-paul',
     'os': 'Windows10',
     'IP_address': '192.168.56.2',
-    'installed_software': 'Apache2 Mysql3.23.33 SSH2.4',
+    'installed_software': 'Mysql3.23.33',
     'rights': 'user',
     'booted': 'True',
-    'vulnerabilities': '',
+    'vulnerabilities': 'mysql3.23.33_vuln',
     'subnet': '192.168.56.0/24',
     'host_sonde': '',
     'defense_actions': ''
@@ -88,7 +88,8 @@ config['WebServerA'] = {
     'name': 'webserverA',
     'os': 'Fedora31.0',
     'IP_address': '192.168.56.203',
-    'installed_software': '',
+    'installed_software': 'Guacamole Mysql3.23.33',
+    'vulnerabilities': 'fedora_vuln mysql3.23.33_vuln',
     'host_sonde': '',
     'booted': 'True',
     'rights': 'user',
@@ -99,8 +100,8 @@ config['FirewallMachineA'] = {
     'name': 'firewallOne',
     'os': 'Debian2.1',
     'IP_address': '192.168.56.205',
-    'installed_software': 'SSH3.1',
-    'vulnerabilities': '',
+    'installed_software': 'SSH3.1 Apache2',
+    'vulnerabilities': 'ssh3.1_vuln apache2_vuln',
     'subnet': '192.168.56.0/24',
     'host_sonde': '',
     'booted': 'True',
@@ -110,11 +111,11 @@ config['FirewallMachineA'] = {
 
 config['VictimMachine1B'] = {
     'name': 'bob',
-    'os': 'Windows XP',
+    'os': 'WindowsXP',
     'IP_address': '62.212.118.53',
-    'installed_software': 'SSH3.1',
+    'installed_software': 'Mysql3.23.33',
     'rights': 'user',
-    'vulnerabilities': '',
+    'vulnerabilities': 'mysql3.23.33_vuln windowsxp_vuln',
     'booted': 'True',
     'subnet': '62.212.118.0/24',
     'host_sonde': '',
@@ -125,9 +126,9 @@ config['VictimMachine2B'] = {
     'name': 'alice',
     'os': 'Windows10',
     'IP_address': '62.212.118.55',
-    'installed_software': 'SSH3.1',
+    'installed_software': 'Mysql3.23.33 IPSec',
     'rights': 'user',
-    'vulnerabilities': '',
+    'vulnerabilities': 'mysql3.23.33_vuln IPSec_vuln',
     'booted': 'True',
     'subnet': '62.212.118.0/24',
     'host_sonde': '',
@@ -138,7 +139,8 @@ config['ftpServerB'] = {
     'name': 'fileserver',
     'os': 'Debian',
     'IP_address': '62.212.118.155',
-    'installed_software': '',
+    'installed_software': 'Apache2',
+    'vulnerabilities': 'apache2_vuln',
     'booted': 'True',
     'host_sonde': '',
     'rights': 'user',
@@ -147,11 +149,11 @@ config['ftpServerB'] = {
 
 
 config['FirewallMachineB'] = {
-    'name': 'firewallHome',
+    'name': 'firewallB',
     'os': 'Debian2.1',
     'IP_address': '62.212.118.100',
-    'installed_software': '',
-    'vulnerabilities': '',
+    'installed_software': 'Apache2',
+    'vulnerabilities': 'apache2_vuln',
     'subnet': '62.212.118.0/24',
     'host_sonde': '',
     'booted': 'True',
@@ -175,9 +177,9 @@ config['VictimMachine1C'] = {
     'name': 'louis',
     'os': 'Mac17.1',
     'IP_address': '172.16.256.11',
-    'installed_software': 'SSH3.1',
+    'installed_software': 'SSH3.1 Libtiff3.6.1',
     'rights': 'user',
-    'vulnerabilities': '',
+    'vulnerabilities': 'ssh3.1_vuln libtiff_vuln',
     'booted': 'True',
     'subnet': '172.16.256.0/24',
     'host_sonde': '',
@@ -188,9 +190,9 @@ config['VictimMachine2C'] = {
     'name': 'jean',
     'os': 'Windows10',
     'IP_address': '172.16.256.15',
-    'installed_software': 'SSH3.1 Mysql3.23.33',
+    'installed_software': 'Mysql3.23.33 IPSec',
     'rights': 'user',
-    'vulnerabilities': '',
+    'vulnerabilities': 'mysql3.23.33_vuln IPSec_vuln',
     'booted': 'True',
     'subnet': '172.16.256.0/24',
     'host_sonde': '',
@@ -208,7 +210,7 @@ config['sondeA'] = {
 config['apache2_vuln'] = {
     'name': 'apache2_vuln',
     'software': 'Apache2',
-    'trigger': 'memory-attack',
+    'trigger': 'bufferoverflow',
     'action': 'root'
 }
 
@@ -223,7 +225,42 @@ config['fedora_vuln'] = {
     'name': 'fedora_vuln',
     'software': 'guacamole0.6.2',
     'trigger': 'bufferoverflow',
-    'action': 'crash'
+    'action': 'DOS'
+}
+
+config['mysql3.23.33_vuln'] = {
+    'name': 'mysql3.23.33_vuln',
+    'software': 'Mysql3.23.33',
+    'trigger': 'bufferoverflow',
+    'action': 'code-execution'
+}
+
+config['libtiff_vuln'] = {
+    'name': 'libtiff_vuln',
+    'software': 'libtiff3.6.1',
+    'trigger': 'integeroverflow',
+    'action': 'DOS'
+}
+
+config['ftp_vuln'] = {
+    'name': 'libtiff_vuln',
+    'software': 'libtiff3.6.1',
+    'trigger': 'integeroverflow',
+    'action': 'DOS'
+}
+
+config['windowsxp_vuln'] = {
+    'name': 'windowsxp_vuln',
+    'software': 'fp30reg.dll',
+    'trigger': 'bufferoverflow',
+    'action': 'code-execution'
+}
+
+config['IPSec_vuln'] = {
+    'name': 'IPSec_vuln',
+    'software': 'IPSec',
+    'trigger': 'encryptionError',
+    'action': 'DOS'
 }
 
 
@@ -233,11 +270,35 @@ config['Attaquant'] = {
 
 }
 
+config['Guacamole-0.6.2-software'] = {
+    'name': 'Guacamole',
+    'version': '0.6.2',
+    'accessRight': 'user'
+}
+
+config['fp30reg.dll-software'] = {
+    'name': 'fp30reg.dll',
+    'version': '0.0',
+    'accessRight': 'user'
+}
+
+config['Libtiff-3.6.1-software'] = {
+    'name': 'Libtiff3.6.1',
+    'version': '3.6.1',
+    'accessRight': 'user'
+}
 
 config['ssh-5.1-software'] = {
     'name': 'SSH5.1',
     'version': '5.1',
     'accessRight': 'root',
+    'password': 'admin'
+}
+
+config['IPSec-software'] = {
+    'name': 'IPSec',
+    'version': '0.0',
+    'accessRight': 'user',
     'password': 'admin'
 }
 
@@ -251,7 +312,7 @@ config['ssh-3.1-software'] = {
 config['mysql-3.23.33-software'] = {
     'name': 'Mysql3.23.33',
     'version': '3.23.33',
-    'accessRight': 'root',
+    'accessRight': 'user'
 
 }
 config['HIDS1'] = {
@@ -265,7 +326,7 @@ config['HIDS1'] = {
 config['Apache-software'] = {
     'name': 'Apache2',
     'version': '2.2',
-    'accessRight': 'root'
+    'accessRight': 'user'
 }
 
 
