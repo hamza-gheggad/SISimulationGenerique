@@ -158,7 +158,7 @@ for section in parser.sections():
                         if 'HIDS'in software.name:
                             VM.host_sonde = software
                 if arg == 'subnet':
-                    VM.subnet = parser.get(section, arg)  # affectation du nom, l'objet correspondant sera affecté après
+                    FW.subnet = parser.get(section, arg)  # affectation du nom, l'objet correspondant sera affecté après
                 if arg == 'rules':
                     Rules = parser.get(section, arg).split(',')
                     FW.setRules(Rules)
@@ -189,9 +189,9 @@ for section in parser.sections():
                 if arg == 'host-sonde':
                     for software in VM.installed_software:
                         if 'HIDS'in software.name:
-                            VM.host_sonde = software
+                            SV.host_sonde = software
                 if arg == 'subnet':
-                    VM.subnet = parser.get(section, arg)  # affectation du nom, l'objet correspondant sera affecté après
+                    SV.subnet = parser.get(section, arg)  # affectation du nom, l'objet correspondant sera affecté après
             Servers.append(SV)
 
 
