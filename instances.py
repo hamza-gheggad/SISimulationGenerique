@@ -53,11 +53,11 @@ for section in parser.sections():
             if arg == 'name':
                 V.name = parser.get(section, arg)
             if arg == 'software':
-                V.os = parser.get(section, arg)
+                V.software = parser.get(section, arg)
             if arg == 'trigger':
-                V.IP_address = parser.get(section, arg)
+                V.trigger = parser.get(section, arg)
             if arg == 'action':
-                V.rights = parser.get(section, arg)
+                V.action = parser.get(section, arg)
         Vulnerabilities.append(V)
 
 
@@ -273,7 +273,6 @@ for section in parser.sections():
                 RT.gateway = parser.getboolean(section, arg)
         Routers.append(RT)
 
-
 Machines = Victim_Machines + Attack_Machines + Firewalls + Servers
 for machine in Machines:
     for subnet in Subnets:
@@ -287,9 +286,3 @@ for subnet in Subnets:
     for sonde in Sondes:
         if subnet.sonde == sonde.name:
             subnet.setSonde(sonde)
-
-for router in Routers:
-    for s in router.subnetsin:
-        print('in: '+router.name+','+s.IP_range)
-    for s in router.subnetsout:
-        print('out: '+router.name+','+s.IP_range)

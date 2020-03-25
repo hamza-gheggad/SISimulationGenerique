@@ -193,7 +193,7 @@ class Utilisateur:
         self.Machine = Machine
 
     def connect_to(self, Machine):
-        print("L'utilisateur {} est connecté à {}.".format(self.name, Machine.name))
+        print("{} est connecté à {}.".format(self.name, Machine.name))
 
 
 class Victime(Utilisateur):
