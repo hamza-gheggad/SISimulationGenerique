@@ -1,13 +1,17 @@
 import simpy
 import time
 import logging
-logging.basicConfig(filename="shell-history.log", level=logging.DEBUG, format='%(asctime)s:%(message)s')
+logging.basicConfig(filename="scenario.log", level=logging.DEBUG, format='%(asctime)s:%(message)s')
 
 from agents import *
 from instances import *
 
 
 def main():
+    for user in Users:
+        if user.name == 'Anonymous':
+            attaquant = user
+
     env = simpy.Environment()
     env.process(scenario(env, attaquant=attaquant, speed=2))
     env.run(until=100)
@@ -24,11 +28,23 @@ def scenario(env, attaquant, speed):
             if ('help' in L) or ('h' in L):
                 print("\nLes commandes disponibles sont :\n\nlist_subnet_machines -> lister toutes les machines de votre subnet.\n\nscan_services <ip_machine> -> lister les services ouverts sur machine.\n\nget_version <software> <ip_machine> -> récupérer la version du logiciel.\n\nwhoami <ip> -> afficher les droits\n\nip <machine_name> -> ip de machine.\n\nos <ip_machine> -> os de machine.\n\nhelp ou h -> afficher ce menu\n\nexit ou q -> pour quitter.\n\nboot/shutdown/reboot <ip> -> démarrer/arrêter/redémarrer machine.\n\nroot <software> <ip_machine> -> changer les droits à root.\n\nuser <software> <ip_machine> -> changer les droits à user.\n\nrouter -i/o -> point de départ/d'arrivée du routeur\n\nscan_machines -s/f <subnet_IP_range> -> lister les machines d'un réseau.\n\nssh username@ip_address\n\nexploit <software_name> <ip>")
 
+            if 'list_subnet_machines' in L:
+                H = []
+                print(attaquant.machine.subnet.components)
+                for node in attaquant.machine.subnet.components:
+                    time.sleep(1)
+                    yield env.timeout(speed)
+                    print("{}:{}".format(node.name, node.IP_address))
+                    H.append((node.name, node.IP_address))
+
+                logging.debug("Les machines ayant le même sous-réseau que {} sont {}".format(attaquant.machine.IP_address, H))
+
             if 'router' in L:
                 if "i" in L[1]:
-                    print("{};{}".format(attaquant.Attacking_Machine.subnet.router.subnetin.name, attaquant.Attacking_Machine.IP_address))
+
+                    print(attaquant.machine.subnet.router.subnetsin)
                 if "o" in L[1]:
-                    print("{};{}".format(attaquant.Attacking_Machine.subnet.router.subnetout.name, VictimeExterne.IP_address))
+                    print(attaquant.machine.subnet.router.subnetsout)
 
             if 'ssh' in L and '@' in L[1]:
                 for subnet in subnets:
@@ -155,16 +171,6 @@ def scenario(env, attaquant, speed):
                                     software.any_user()
                         else:
                             print("Vous n'avez pas les droits nécessaires.")
-
-            if 'list_subnet_machines' in L:
-                H = []
-                for node in attaquant.Attacking_Machine.subnet.components:
-                    time.sleep(1)
-                    yield env.timeout(speed)
-                    print(node.name)
-                    H.append(node.name)
-
-                logging.debug("Les machines de votre sous-réseau sont {}".format(H))
 
             if 'scan_machines' in L:
                 H = []

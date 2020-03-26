@@ -18,7 +18,6 @@ Users = []
 
 for section in parser.sections():
     if 'software' in section:
-
         SF = Software()
         args = parser.options(section)
         for arg in args:
@@ -127,9 +126,9 @@ for section in parser.sections():
                 if arg == 'host-sonde':
                     for software in VM.installed_software:
                         if 'HIDS'in software.name:
-                            VM.host_sonde = software
+                            AM.host_sonde = software
                 if arg == 'subnet':
-                    VM.subnet = parser.get(section, arg)  # affectation du nom, l'objet correspondant sera affecté après
+                    AM.subnet = parser.get(section, arg)  # affectation du nom, l'objet correspondant sera affecté après
             Attack_Machines.append(AM)
 
         if 'Firewall' in section:
@@ -157,7 +156,7 @@ for section in parser.sections():
                 if arg == 'host-sonde':
                     for software in VM.installed_software:
                         if 'HIDS'in software.name:
-                            VM.host_sonde = software
+                            FW.host_sonde = software
                 if arg == 'subnet':
                     FW.subnet = parser.get(section, arg)  # affectation du nom, l'objet correspondant sera affecté après
                 if arg == 'rules':
@@ -207,12 +206,9 @@ for section in parser.sections():
                 SB.IP_range = parser.get(section, arg)
             if arg == 'components':
                 L = []
+                Machines = Victim_Machines + Attack_Machines + Firewalls + Servers
                 S_components = parser.get(section, arg).split(' ')
-                for machine in Victim_Machines:
-                    for S_component in S_components:
-                        if S_component == machine.IP_address:
-                            L.append(machine)
-                for machine in Attack_Machines:
+                for machine in Machines:
                     for S_component in S_components:
                         if S_component == machine.IP_address:
                             L.append(machine)
@@ -227,6 +223,8 @@ for section in parser.sections():
                         SB.firewall = firewall
         Subnets.append(SB)
 
+for server in Servers:
+    print(server.name)
 
 for section in parser.sections():
     if 'sonde' in section:
@@ -302,7 +300,3 @@ for subnet in Subnets:
     for sonde in Sondes:
         if subnet.sonde == sonde.name:
             subnet.setSonde(sonde)
-
-
-for user in Users:
-    print(user.name, user.machine.os)

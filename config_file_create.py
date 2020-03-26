@@ -5,7 +5,7 @@ config = ConfigParser()
 config['subnetA'] = {
     'name': 'LAN1',
     'IP_range': '192.168.56.0/24',
-    'components': '192.168.56.1 192.168.56.2 192.168.56.100',
+    'components': '192.168.56.1 192.168.56.2 192.168.56.205 192.168.56.203',
     'router': 'router-LAN1',
     'sonde': 'sondeA',
     'firewall': '192.168.56.205'
@@ -14,7 +14,7 @@ config['subnetA'] = {
 config['subnetB'] = {
     'name': 'LAN2',
     'IP_range': '62.212.118.0/24',
-    'components': '',
+    'components': '62.212.118.53 62.212.118.55 62.212.118.155 62.212.118.100',
     'router': 'router-LAN2',
     'sonde': '',
     'firewall': '62.212.118.100'
@@ -23,7 +23,7 @@ config['subnetB'] = {
 config['subnetC'] = {
     'name': 'LAN3',
     'IP_range': '172.16.256.0/24',
-    'components': '',
+    'components': '172.16.256.101 172.16.256.11 172.16.256.15',
     'router': 'router-LAN2',
     'sonde': '',
     'firewall': ''
@@ -58,7 +58,7 @@ config['router4'] = {
 }
 
 config['VictimMachine1A'] = {
-    'name': 'ordi-marie',
+    'name': 'marie',
     'os': 'Debian2.0',
     'IP_address': '192.168.56.1',
     'installed_software': 'SSH5.1 Apache2 HIDS1',
@@ -84,7 +84,7 @@ config['VictimMachine2A'] = {
 
 }
 
-config['WebServerA'] = {
+config['WebServerMachineA'] = {
     'name': 'webserverA',
     'os': 'Fedora31.0',
     'IP_address': '192.168.56.203',
@@ -97,7 +97,7 @@ config['WebServerA'] = {
 }
 
 config['FirewallMachineA'] = {
-    'name': 'firewallOne',
+    'name': 'firewallA',
     'os': 'Debian2.1',
     'IP_address': '192.168.56.205',
     'installed_software': 'SSH3.1 Apache2',
@@ -135,8 +135,8 @@ config['VictimMachine2B'] = {
     'defense_actions': ''
 }
 
-config['ftpServerB'] = {
-    'name': 'fileserver',
+config['ftpServerMachineB'] = {
+    'name': 'ftpserver',
     'os': 'Debian',
     'IP_address': '62.212.118.155',
     'installed_software': 'Apache2',
@@ -162,7 +162,7 @@ config['FirewallMachineB'] = {
 }
 
 config['AttackingMachineC'] = {
-    'name': 'Ordi-Anonyme',
+    'name': 'Anonymous',
     'os': 'Kali2020.1',
     'IP_address': '172.16.256.101',
     'rights': 'user',
@@ -278,9 +278,24 @@ config['bob-user'] = {
     'machine': '62.212.118.53'
 }
 
+config['marie-user'] = {
+    'name': 'marie',
+    'machine': '192.168.56.1'
+}
+
 config['paul-user'] = {
     'name': 'paul',
     'machine': '192.168.56.2'
+}
+
+config['jean-user'] = {
+    'name': 'jean',
+    'machine': '172.16.256.15'
+}
+
+config['louis-user'] = {
+    'name': 'louis',
+    'machine': '172.16.256.11'
 }
 
 config['Guacamole-0.6.2-software'] = {
