@@ -30,7 +30,6 @@ def scenario(env, attaquant, speed):
 
             if 'list_subnet_machines' in L:
                 H = []
-                print(attaquant.machine.subnet.components)
                 for node in attaquant.machine.subnet.components:
                     time.sleep(1)
                     yield env.timeout(speed)
@@ -41,70 +40,73 @@ def scenario(env, attaquant, speed):
 
             if 'router' in L:
                 if "i" in L[1]:
-
-                    print(attaquant.machine.subnet.router.subnetsin)
+                    for subnet in attaquant.machine.subnet.router.subnetsin:
+                        print(subnet.IP_range)
                 if "o" in L[1]:
-                    print(attaquant.machine.subnet.router.subnetsout)
+                    for subnet in attaquant.machine.subnet.router.subnetsout:
+                        print(subnet.IP_range)
 
             if 'ssh' in L and '@' in L[1]:
-                for subnet in subnets:
+                for subnet in Subnets:
                     for machine in subnet.components:
                         for software in machine.installed_software:
                             if 'SSH' in software.name:
                                 if machine.IP_address in L[1] and machine.name in L[1] and machine.booted == True:
                                     password = input("password:")
-                                    if software.token1 == password:
-                                        rules = subnet.parfeu.rules.split(',')
+                                    if software.password == password:
+                                        rules = subnet.firewall.rules
                                         print("Essai de connexion ssh à {}...".format(machine.IP_address))
                                         time.sleep(3)
                                         yield env.timeout(speed)
-                                        for rule in rules:
-                                            Rule = rule.split()
-                                            if ('i' in Rule[1] and 'SSH' in Rule[2] and 'ACCEPT' in Rule[3]) or ('ANY' in Rule[1] and 'SSH' in Rule[2] and 'ACCEPT' in Rule[3]):
-                                                print("Connexion ssh réussie à {}".format(machine.IP_address))
-                                                while True:
-                                                    shell_ssh = input("{}$".format(machine.name))
-                                                    H = shell_ssh.split()
-                                                    if ('exit' in H) or ('q' in H):
-                                                        break
-                                                    if 'boot' in H:
-                                                        machine.boot()
-                                                    if 'reboot' in H:
-                                                        machine.reboot()
-                                                    if 'shutdown' in H:
-                                                        machine.shutdown()
-                                                        break
+                                        access = True
+                                        if subnet.firewall.name != 'NULL':
+                                            for rule in rules:
+                                                Rule = rule.split()
+                                                if ('i' in Rule[1] and 'SSH' in Rule[2] and 'ACCEPT' in Rule[3]) or ('ANY' in Rule[1] and 'SSH' in Rule[2] and 'ACCEPT' in Rule[3]):
+                                                    access = True
+                                                else:
+                                                    access = False
+                                        if access == True:
+                                            print("Connexion ssh réussie à {}".format(machine.IP_address))
+                                            while True:
+                                                shell_ssh = input("{}$".format(machine.name))
+                                                H = shell_ssh.split()
+                                                if ('exit' in H) or ('q' in H):
+                                                    break
+                                                if 'reboot' in H:
+                                                    machine.reboot()
+                                                if 'shutdown' in H:
+                                                    machine.shutdown()
+                                                    break
 
-                                                    if 'list_machines' in H:
-                                                        for node in machine.subnet.components:
-                                                            time.sleep(1)
-                                                            yield env.timeout(speed)
-                                                            print("{}:{}".format(node.name, node.IP_address))
-                                                    if 'ssh' in H[0] and '@' in H[1]:
-                                                        for submachine in machine.subnet.components:
-                                                            if submachine.IP_address in H[1] and submachine.name in H[1] and submachine.booted == True:
-                                                                for subsoftware in submachine.installed_software:
-                                                                    if 'SSH' in subsoftware.name:
-                                                                        password = input("password:")
-                                                                        if subsoftware.token1 == password:
-                                                                            print("Connexion ssh réussie à {}".format(submachine.IP_address))
-                                                                            while True:
-                                                                                subshell_ssh = input("{}$".format(submachine.name))
-                                                                                S = subshell_ssh.split()
-                                                                                if ('exit' in S) or ('q' in S):
-                                                                                    break
-                                                                                if 'shutdown' in S:
-                                                                                    submachine.shutdown()
-                                                                                    break
-                                                                                if 'reboot' in S:
-                                                                                    submachine.reboot()
-                                                                        else:
-                                                                            print("mot de passe érroné.")
+                                                if 'list_machines' in H:
+                                                    for node in machine.subnet.components:
+                                                        time.sleep(1)
+                                                        yield env.timeout(speed)
+                                                        print("{}:{}".format(node.name, node.IP_address))
+                                                if 'ssh' in H[0] and '@' in H[1]:
+                                                    for submachine in machine.subnet.components:
+                                                        if submachine.IP_address in H[1] and submachine.name in H[1] and submachine.booted == True:
+                                                            for subsoftware in submachine.installed_software:
+                                                                if 'SSH' in subsoftware.name:
+                                                                    password = input("password:")
+                                                                    if subsoftware.password == password:
+                                                                        print("Connexion ssh réussie à {}".format(submachine.IP_address))
+                                                                        while True:
+                                                                            subshell_ssh = input("{}$".format(submachine.name))
+                                                                            S = subshell_ssh.split()
+                                                                            if ('exit' in S) or ('q' in S):
+                                                                                break
+                                                                            if 'shutdown' in S:
+                                                                                submachine.shutdown()
+                                                                                break
+                                                                            if 'reboot' in S:
+                                                                                submachine.reboot()
+                                                                    else:
+                                                                        print("mot de passe érroné. Connexion ssh non permise.")
 
-                                            if 'i' in Rule[1] and 'SSH' in Rule[2] and 'REJECT' in Rule[3]:
-                                                print("Connexion ssh non permise à {}".format(machine.IP_address))
                                     else:
-                                        print("mot de passe érroné.")
+                                        print("mot de passe érroné. Connexion ssh non permise.")
 
             if 'scan_services' in L:
                 H = []
@@ -196,7 +198,7 @@ def scenario(env, attaquant, speed):
                 logging.debug("Les machines du sous-réseau {} sont {}".format(subnet.IP_range, H))
 
             if 'get_version' in L:
-                for node in attaquant.Attacking_Machine.subnet.components:
+                for node in attaquant.machine.subnet.components:
                     if node.IP_address == L[2]:
                         for software in node.installed_software:
                             if software.name == L[1]:

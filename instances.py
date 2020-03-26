@@ -223,8 +223,6 @@ for section in parser.sections():
                         SB.firewall = firewall
         Subnets.append(SB)
 
-for server in Servers:
-    print(server.name)
 
 for section in parser.sections():
     if 'sonde' in section:
@@ -290,8 +288,10 @@ for section in parser.sections():
 Machines = Victim_Machines + Attack_Machines + Firewalls + Servers
 for machine in Machines:
     for subnet in Subnets:
+        subnet.firewall = Firewall()
         if machine.subnet == subnet.IP_range:
             machine.setSubnet(subnet)
+
 
 for subnet in Subnets:
     for router in Routers:

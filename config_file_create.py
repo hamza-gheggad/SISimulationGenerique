@@ -3,48 +3,45 @@ from configparser import ConfigParser
 config = ConfigParser()
 
 config['subnetA'] = {
-    'name': 'LAN1',
+    'name': 'LANA',
     'IP_range': '192.168.56.0/24',
-    'components': '192.168.56.1 192.168.56.2 192.168.56.205 192.168.56.203',
-    'router': 'router-LAN1',
+    'components': '192.168.56.1 192.168.56.2 192.168.56.4 192.168.56.8 192.168.56.205 192.168.56.203',
+    'router': 'router-LANA',
     'sonde': 'sondeA',
     'firewall': '192.168.56.205'
 }
 
 config['subnetB'] = {
-    'name': 'LAN2',
+    'name': 'LANB',
     'IP_range': '62.212.118.0/24',
-    'components': '62.212.118.53 62.212.118.55 62.212.118.155 62.212.118.100',
-    'router': 'router-LAN2',
-    'sonde': '',
+    'components': '62.212.118.53 62.212.118.55 62.212.118.56 62.212.118.59 62.212.118.155 62.212.118.100',
+    'router': 'router-LANB',
     'firewall': '62.212.118.100'
 }
 
 config['subnetC'] = {
-    'name': 'LAN3',
+    'name': 'LANC',
     'IP_range': '172.16.256.0/24',
     'components': '172.16.256.101 172.16.256.11 172.16.256.15',
-    'router': 'router-LAN2',
-    'sonde': '',
-    'firewall': ''
+    'router': 'router-LANC'
 }
 
-config['router1'] = {
-    'name': 'router-LAN1',
+config['routerA'] = {
+    'name': 'router-LANA',
     'subnetsin': '192.168.56.0/24',
     'subnetsout': '62.212.118.0/24 172.16.256.0/24',
     'gateway': 'True'
 }
 
-config['router2'] = {
-    'name': 'router-LAN2',
+config['routerB'] = {
+    'name': 'router-LANB',
     'subnetsin': '62.212.118.0/24',
     'subnetsout': '172.16.256.0/24 192.168.56.0/24',
     'gateway': 'True'
 }
 
-config['router3'] = {
-    'name': 'router-LAN3',
+config['routerC'] = {
+    'name': 'router-LANC',
     'subnetsin': '172.16.256.0/24',
     'subnetsout': '62.212.118.0/24 192.168.56.0/24',
     'gateway': 'True'
@@ -66,8 +63,7 @@ config['VictimMachine1A'] = {
     'booted': 'True',
     'vulnerabilities': 'apache2_vuln',
     'subnet': '192.168.56.0/24',
-    'host_sonde': 'HIDS1',
-    'defense_actions': ''
+    'host_sonde': 'HIDS1'
 }
 
 config['VictimMachine2A'] = {
@@ -78,10 +74,26 @@ config['VictimMachine2A'] = {
     'rights': 'user',
     'booted': 'True',
     'vulnerabilities': 'mysql3.23.33_vuln',
-    'subnet': '192.168.56.0/24',
-    'host_sonde': '',
-    'defense_actions': ''
+    'subnet': '192.168.56.0/24'
 
+}
+
+config['VictimMachine3A'] = {
+    'name': 'toto',
+    'os': 'Linux',
+    'IP_address': '192.168.56.4',
+    'rights': 'user',
+    'booted': 'True',
+    'subnet': '192.168.56.0/24'
+}
+
+config['VictimMachine4A'] = {
+    'name': 'titi',
+    'os': 'Windows10',
+    'IP_address': '192.168.56.8',
+    'rights': 'user',
+    'booted': 'True',
+    'subnet': '192.168.56.0/24'
 }
 
 config['WebServerMachineA'] = {
@@ -90,7 +102,6 @@ config['WebServerMachineA'] = {
     'IP_address': '192.168.56.203',
     'installed_software': 'Guacamole Mysql3.23.33',
     'vulnerabilities': 'fedora_vuln mysql3.23.33_vuln',
-    'host_sonde': '',
     'booted': 'True',
     'rights': 'user',
     'subnet': '192.168.56.0/24'
@@ -103,7 +114,6 @@ config['FirewallMachineA'] = {
     'installed_software': 'SSH3.1 Apache2',
     'vulnerabilities': 'ssh3.1_vuln apache2_vuln',
     'subnet': '192.168.56.0/24',
-    'host_sonde': '',
     'booted': 'True',
     'rights': 'user',
     'rules': 'FORWARD -i HTTP ACCEPT,FORWARD -o HTTP ACCEPT,FORWARD -i SSH REJECT,FORWARD -o SSH ACCEPT'
@@ -117,9 +127,7 @@ config['VictimMachine1B'] = {
     'rights': 'user',
     'vulnerabilities': 'mysql3.23.33_vuln windowsxp_vuln',
     'booted': 'True',
-    'subnet': '62.212.118.0/24',
-    'host_sonde': '',
-    'defense_actions': ''
+    'subnet': '62.212.118.0/24'
 }
 
 config['VictimMachine2B'] = {
@@ -130,9 +138,25 @@ config['VictimMachine2B'] = {
     'rights': 'user',
     'vulnerabilities': 'mysql3.23.33_vuln IPSec_vuln',
     'booted': 'True',
-    'subnet': '62.212.118.0/24',
-    'host_sonde': '',
-    'defense_actions': ''
+    'subnet': '62.212.118.0/24'
+}
+
+config['VictimMachine3B'] = {
+    'name': 'charlotte',
+    'os': 'Mac19',
+    'IP_address': '62.212.118.56',
+    'rights': 'user',
+    'booted': 'True',
+    'subnet': '62.212.118.0/24'
+}
+
+config['VictimMachine4B'] = {
+    'name': 'maurice',
+    'os': 'Linux',
+    'IP_address': '62.212.118.59',
+    'rights': 'root',
+    'booted': 'True',
+    'subnet': '62.212.118.0/24'
 }
 
 config['ftpServerMachineB'] = {
@@ -142,7 +166,6 @@ config['ftpServerMachineB'] = {
     'installed_software': 'Apache2',
     'vulnerabilities': 'apache2_vuln ftp_vuln',
     'booted': 'True',
-    'host_sonde': '',
     'rights': 'user',
     'subnet': '62.212.118.0/24'
 }
@@ -155,10 +178,9 @@ config['FirewallMachineB'] = {
     'installed_software': 'Apache2 SSH5.1',
     'vulnerabilities': 'apache2_vuln',
     'subnet': '62.212.118.0/24',
-    'host_sonde': '',
     'booted': 'True',
     'rights': 'user',
-    'rules': 'FORWARD -i HTTP REJECT,FORWARD -o HTTP REJECT,FORWARD -i SSH REJECT,FORWARD -o SSH REJECT'
+    'rules': 'FORWARD -i HTTP REJECT,FORWARD -o HTTP ACCEPT,FORWARD -i SSH ACCEPT,FORWARD -o SSH ACCEPT'
 }
 
 config['AttackingMachineC'] = {
@@ -166,11 +188,9 @@ config['AttackingMachineC'] = {
     'os': 'Kali2020.1',
     'IP_address': '172.16.256.101',
     'rights': 'user',
-    'installed_software': '',
+    'installed_software': 'SSH5.1',
     'booted': 'True',
-    'subnet': '172.16.256.0/24',
-    'host_sonde': '',
-    'attack_actions': ''
+    'subnet': '172.16.256.0/24'
 }
 
 config['VictimMachine1C'] = {
@@ -181,9 +201,7 @@ config['VictimMachine1C'] = {
     'rights': 'user',
     'vulnerabilities': 'ssh3.1_vuln libtiff_vuln',
     'booted': 'True',
-    'subnet': '172.16.256.0/24',
-    'host_sonde': '',
-    'defense_actions': ''
+    'subnet': '172.16.256.0/24'
 }
 
 config['VictimMachine2C'] = {
@@ -273,6 +291,11 @@ config['alice-user'] = {
     'machine': '62.212.118.55'
 }
 
+config['charlotte-user'] = {
+    'name': 'charlotte',
+    'machine': '62.212.118.56'
+}
+
 config['bob-user'] = {
     'name': 'bob',
     'machine': '62.212.118.53'
@@ -283,6 +306,16 @@ config['marie-user'] = {
     'machine': '192.168.56.1'
 }
 
+config['toto-user'] = {
+    'name': 'toto',
+    'machine': '192.168.56.4'
+}
+
+config['titi-user'] = {
+    'name': 'titi',
+    'machine': '192.168.56.8'
+}
+
 config['paul-user'] = {
     'name': 'paul',
     'machine': '192.168.56.2'
@@ -291,6 +324,11 @@ config['paul-user'] = {
 config['jean-user'] = {
     'name': 'jean',
     'machine': '172.16.256.15'
+}
+
+config['maurice-user'] = {
+    'name': 'maurice',
+    'machine': '62.212.118.59'
 }
 
 config['louis-user'] = {
@@ -326,8 +364,7 @@ config['ssh-5.1-software'] = {
 config['IPSec-software'] = {
     'name': 'IPSec',
     'version': '0.0',
-    'accessRight': 'user',
-    'password': 'admin'
+    'accessRight': 'user'
 }
 
 config['ssh-3.1-software'] = {
