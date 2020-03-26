@@ -79,16 +79,17 @@ def scan_machines(L):
     for subnet in Subnets:
         if subnet.IP_range == L[2]:
             if ("s" in L[1]):
-                time.sleep(2)
                 for node in subnet.components:
+                    time.sleep(1)
                     print("{}:{}".format(node.name, node.IP_address))
                     H.append(node.name)
             if 'f' in L[1]:
                 for node in subnet.components:
                     print("{}:{}".format(node.name, node.IP_address))
                     H.append(node.name)
-                rules = subnet.sonde.rules
+
                 if (subnet.sonde != "NULL"):
+                    rules = subnet.sonde.rules
                     for rule in rules:
                         if 'DETECT FAST SCAN' in rule:
                             subnet.sonde.alert("le sous-réseau {} est en train d'être scanné.".format(subnet.IP_range))
