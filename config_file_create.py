@@ -116,7 +116,7 @@ config['FirewallMachineA'] = {
     'subnet': '192.168.56.0/24',
     'booted': 'True',
     'rights': 'user',
-    'rules': 'FORWARD -i HTTP ACCEPT,FORWARD -o HTTP ACCEPT,FORWARD -i SSH REJECT,FORWARD -o SSH ACCEPT'
+    'rules': 'FORWARD -i NETCAT REJECT 172.16.256.0/24,FORWARD -i SSH REJECT 62.212.118.0/24'
 }
 
 config['VictimMachine1B'] = {
@@ -180,7 +180,7 @@ config['FirewallMachineB'] = {
     'subnet': '62.212.118.0/24',
     'booted': 'True',
     'rights': 'user',
-    'rules': 'FORWARD -i HTTP REJECT,FORWARD -o HTTP ACCEPT,FORWARD -i SSH ACCEPT,FORWARD -o SSH ACCEPT'
+    'rules': 'FORWARD -i SSH REJECT 172.16.256.0/24,FORWARD -o SSH REJECT 172.16.256.0/24,FORWARD -i NETCAT REJECT 172.16.256.0/24,FORWARD -o NETCAT REJECT 172.16.256.0/24'
 }
 
 config['AttackingMachineC'] = {

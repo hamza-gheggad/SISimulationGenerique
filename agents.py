@@ -29,6 +29,18 @@ class Software:
             print("Les droits d'accès sont déjà user (any).")
 
 
+class HIDS(Software):
+    def __init__(self, name='NULL', version="NULL", accessRight="user", rules="NULL"):
+        self.name = name
+        self.version = version
+        self.rules = rules
+        self.accessRight = accessRight
+
+    def alert(self, message="NULL"):
+        print('alerte HIDS : {}'.format(message))
+        logging.debug("alerte HIDS : {}".format(message))
+
+
 class Router:
     def __init__(self, name='NULL', subnetsin=[], subnetsout=[]):
         self.name = name
@@ -90,7 +102,7 @@ class Vulnerability:
 
 
 class Machine:
-    def __init__(self, name='NULL', os='NULL', IP_address='NULL', installed_software=[], rights='user', subnet=Subnet(), filesystem=File_System(), booted=False, host_sonde=Software()):
+    def __init__(self, name='NULL', os='NULL', IP_address='NULL', installed_software=[], rights='user', subnet=Subnet(), filesystem=File_System(), booted=False, host_sonde=HIDS()):
         self.name = name
         self.booted = booted
         self.os = os
@@ -149,7 +161,7 @@ class Machine:
 
 
 class Victim_Machine(Machine):
-    def __init__(self, name='NULL', os='NULL', IP_address='NULL', installed_software=[], rights='user', vulnerabilities=[], defense_actions=[], subnet=Subnet(), filesystem=File_System([], []), booted=False, host_sonde=Software()):
+    def __init__(self, name='NULL', os='NULL', IP_address='NULL', installed_software=[], rights='user', vulnerabilities=[], defense_actions=[], subnet=Subnet(), filesystem=File_System([], []), booted=False, host_sonde=HIDS()):
         self.name = name
         self.os = os
         self.IP_address = IP_address
@@ -164,7 +176,7 @@ class Victim_Machine(Machine):
 
 
 class Attacking_Machine(Machine):
-    def __init__(self, name='NULL', os='NULL', IP_address='NULL', installed_software='NULL', rights='user', attack_actions=[], subnet=Subnet(), filesystem=File_System(), booted=False, host_sonde=Software()):
+    def __init__(self, name='NULL', os='NULL', IP_address='NULL', installed_software='NULL', rights='user', attack_actions=[], subnet=Subnet(), filesystem=File_System(), booted=False, host_sonde=HIDS()):
         self.name = name
         self.os = os
         self.IP_address = IP_address
@@ -178,7 +190,7 @@ class Attacking_Machine(Machine):
 
 
 class Firewall(Machine):
-    def __init__(self, name="NULL", os="NULL", IP_address="NULL", installed_software=[], vulnerabilities=[], rights='user', rules=[], subnet=Subnet(), filesystem=File_System(), booted=False, host_sonde=Software()):
+    def __init__(self, name="NULL", os="NULL", IP_address="NULL", installed_software=[], vulnerabilities=[], rights='user', rules=[], subnet=Subnet(), filesystem=File_System(), booted=False, host_sonde=HIDS()):
         self.name = name
         self.os = os
         self.IP_address = IP_address
@@ -204,7 +216,7 @@ class Firewall(Machine):
 
 
 class Server(Victim_Machine):
-    def __init__(self, name='NULL', os='NULL', IP_address='NULL', vulnerabilities=[], installed_software=[], rights='user', subnet=Subnet(), booted=False, host_sonde=Software()):
+    def __init__(self, name='NULL', os='NULL', IP_address='NULL', vulnerabilities=[], installed_software=[], rights='user', subnet=Subnet(), booted=False, host_sonde=HIDS()):
         self.name = name
         self.os = os
         self.subnet = subnet
@@ -224,7 +236,7 @@ class User:
         print("{} est connecté à {}.".format(self.name, machine.name))
 
 
-class Victime(User):
+class Victim(User):
     def __init__(self, name='NULL', VictimMachine=Machine()):
         self.name = name
         self.VictimMachine = VictimMachine
@@ -240,18 +252,6 @@ class Attaquant(User):
 
     def execAttack(self, attaque, DestinationMachine):
         logging.debug("L'attaque {} est exécutée sur {}.".format(attaque, DestinationMachine))
-
-
-class HIDS(Software):
-    def __init__(self, name='NULL', version="NULL", accessRight="user", rules="NULL"):
-        self.name = name
-        self.version = version
-        self.rules = rules
-        self.accessRight = accessRight
-
-    def alert(self, message="NULL"):
-        print('alerte HIDS : {}'.format(message))
-        logging.debug("alerte HIDS : {}".format(message))
 
 
 class NIDS:

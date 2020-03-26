@@ -93,7 +93,7 @@ for section in parser.sections():
                             if software.name == softwareName:
                                 softwares.append(software)
                         VM.setSoftwares(softwares)
-                if arg == 'host-sonde':
+                if arg == 'host_sonde':
                     for software in VM.installed_software:
                         if 'HIDS'in software.name:
                             VM.host_sonde = software
@@ -123,7 +123,7 @@ for section in parser.sections():
                             if software.name == softwareName:
                                 softwares.append(software)
                         AM.setSoftwares(softwares)
-                if arg == 'host-sonde':
+                if arg == 'host_sonde':
                     for software in VM.installed_software:
                         if 'HIDS'in software.name:
                             AM.host_sonde = software
@@ -153,7 +153,7 @@ for section in parser.sections():
                             if software.name == softwareName:
                                 softwares.append(software)
                         FW.setSoftwares(softwares)
-                if arg == 'host-sonde':
+                if arg == 'host_sonde':
                     for software in VM.installed_software:
                         if 'HIDS'in software.name:
                             FW.host_sonde = software
@@ -186,7 +186,7 @@ for section in parser.sections():
                             if software.name == softwareName:
                                 softwares.append(software)
                         SV.setSoftwares(softwares)
-                if arg == 'host-sonde':
+                if arg == 'host_sonde':
                     for software in VM.installed_software:
                         if 'HIDS'in software.name:
                             SV.host_sonde = software
@@ -288,9 +288,12 @@ for section in parser.sections():
 Machines = Victim_Machines + Attack_Machines + Firewalls + Servers
 for machine in Machines:
     for subnet in Subnets:
-        subnet.firewall = Firewall()
         if machine.subnet == subnet.IP_range:
             machine.setSubnet(subnet)
+
+for subnet in Subnets:
+    if subnet.firewall == 'NULL':
+        subnet.firewall = Firewall()
 
 
 for subnet in Subnets:
