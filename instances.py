@@ -186,6 +186,14 @@ for section in parser.sections():
                             if software.name == softwareName:
                                 softwares.append(software)
                         SV.setSoftwares(softwares)
+                if arg == 'vulnerabilities':
+                    L = []
+                    SV_vulns = parser.get(section, arg).split(' ')
+                    for vuln in Vulnerabilities:
+                        for SV_vuln in SV_vulns:
+                            if SV_vuln == vuln.name:
+                                L.append(vuln)
+                    SV.vulnerabilities = L
                 if arg == 'host_sonde':
                     for software in VM.installed_software:
                         if 'HIDS'in software.name:

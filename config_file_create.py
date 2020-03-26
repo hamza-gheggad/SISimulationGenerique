@@ -100,7 +100,7 @@ config['WebServerMachineA'] = {
     'name': 'webserverA',
     'os': 'Fedora31.0',
     'IP_address': '192.168.56.203',
-    'installed_software': 'Guacamole Mysql3.23.33',
+    'installed_software': 'SSH5.1 Guacamole Mysql3.23.33',
     'vulnerabilities': 'fedora_vuln mysql3.23.33_vuln',
     'booted': 'True',
     'rights': 'user',
@@ -241,7 +241,7 @@ config['ssh3.1_vuln'] = {
 
 config['fedora_vuln'] = {
     'name': 'fedora_vuln',
-    'software': 'guacamole0.6.2',
+    'software': 'Guacamole',
     'trigger': 'bufferoverflow',
     'action': 'DOS'
 }
@@ -262,6 +262,7 @@ config['libtiff_vuln'] = {
 
 config['ftp_vuln'] = {
     'name': 'ftp_vuln',
+    'software': 'ftp-software',
     'trigger': 'dataTheft',
     'action': 'DOS'
 }
@@ -280,6 +281,69 @@ config['IPSec_vuln'] = {
     'action': 'DOS'
 }
 
+config['Guacamole-0.6.2-software'] = {
+    'name': 'Guacamole',
+    'version': '0.6.2',
+    'accessRight': 'root'
+}
+
+config['ftp-software'] = {
+    'name': 'ftp-software',
+    'version': '0.0',
+    'accessRight': 'user'
+}
+
+config['fp30reg.dll-software'] = {
+    'name': 'fp30reg.dll',
+    'version': '0.0',
+    'accessRight': 'user'
+}
+
+config['Libtiff-3.6.1-software'] = {
+    'name': 'Libtiff3.6.1',
+    'version': '3.6.1',
+    'accessRight': 'root'
+}
+
+config['ssh-5.1-software'] = {
+    'name': 'SSH5.1',
+    'version': '5.1',
+    'accessRight': 'root',
+    'password': 'nonono1@'
+}
+
+config['IPSec-software'] = {
+    'name': 'IPSec',
+    'version': '0.0',
+    'accessRight': 'root'
+}
+
+config['ssh-3.1-software'] = {
+    'name': 'SSH3.1',
+    'version': '3.1',
+    'accessRight': 'root',
+    'password': 'user'
+}
+
+config['mysql-3.23.33-software'] = {
+    'name': 'Mysql3.23.33',
+    'version': '3.23.33',
+    'accessRight': 'user'
+
+}
+config['HIDS1'] = {
+    'name': 'HIDS1',
+    'version': '10.2',
+    'rules': 'DETECT SERVICE SCAN',
+    'accessRight': 'root'
+}
+
+
+config['Apache-software'] = {
+    'name': 'Apache2',
+    'version': '2.2',
+    'accessRight': 'user'
+}
 
 config['hacker-user'] = {
     'name': 'Anonymous',
@@ -334,64 +398,6 @@ config['maurice-user'] = {
 config['louis-user'] = {
     'name': 'louis',
     'machine': '172.16.256.11'
-}
-
-config['Guacamole-0.6.2-software'] = {
-    'name': 'Guacamole',
-    'version': '0.6.2',
-    'accessRight': 'user'
-}
-
-config['fp30reg.dll-software'] = {
-    'name': 'fp30reg.dll',
-    'version': '0.0',
-    'accessRight': 'user'
-}
-
-config['Libtiff-3.6.1-software'] = {
-    'name': 'Libtiff3.6.1',
-    'version': '3.6.1',
-    'accessRight': 'user'
-}
-
-config['ssh-5.1-software'] = {
-    'name': 'SSH5.1',
-    'version': '5.1',
-    'accessRight': 'root',
-    'password': 'admin'
-}
-
-config['IPSec-software'] = {
-    'name': 'IPSec',
-    'version': '0.0',
-    'accessRight': 'user'
-}
-
-config['ssh-3.1-software'] = {
-    'name': 'SSH3.1',
-    'version': '3.1',
-    'accessRight': 'root',
-    'password': 'user'
-}
-
-config['mysql-3.23.33-software'] = {
-    'name': 'Mysql3.23.33',
-    'version': '3.23.33',
-    'accessRight': 'user'
-
-}
-config['HIDS1'] = {
-    'name': 'HIDS1',
-    'version': '10.2',
-    'rules': 'DETECT SERVICE SCAN',
-    'accessRight': 'root'
-}
-
-
-config['Apache-software'] = {
-    'name': 'Apache2',
-    'version': '2.2',
-    'accessRight': 'user'
 }
 
 

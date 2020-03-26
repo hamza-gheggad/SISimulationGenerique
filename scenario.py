@@ -7,6 +7,42 @@ from agents import *
 from instances import *
 
 
+def exploit(L, machine):
+    for subnet in Subnets:
+        for node in subnet.components:
+            if node.IP_address == L[2]:
+                access = True
+                rules = subnet.firewall.rules
+                for rule in rules:
+                    Rule = rule.split()
+                    if "i" in Rule[1] and Rule[2] == 'NETCAT' and Rule[3] == 'REJECT' and Rule[4] == machine.subnet.IP_range:
+                        print("Exploit bloqué par firewall.")
+                        access = False
+
+                if access == True:
+                    for software in node.installed_software:
+                        time.sleep(1)
+                        if software.name == L[1]:
+                            for vuln in node.vulnerabilities:
+                                if vuln.software == software.name:
+                                    print("action : {}".format(vuln.action))
+                                    node.rights = software.accessRight
+                                    logging.debug("Les droits sur la machine {} sont : {}".format(node.name, node.rights))
+                                    if vuln.software == 'Guacamole':
+                                        new_password = input('new password: ')
+                                        for software in node.installed_software:
+                                            if "SSH" in software.name:
+                                                software.password = new_password
+                                    if vuln.software == 'ftp-software':
+                                        print('')
+
+        if (subnet.sonde != "NULL"):
+            rules = subnet.sonde.rules
+            for rule in rules:
+                if 'DETECT DISTANT EXPLOIT' in rule:
+                    subnet.sonde.alert("La machine  {}  du sous-réseau {} est en train d'être exploitée.".format(node.IP_address, subnet.IP_range))
+
+
 def main():
     for user in Users:
         if user.name == 'Anonymous':
@@ -54,6 +90,7 @@ def scenario(env, attaquant, speed):
                                 if machine.IP_address in L[1] and machine.name in L[1] and machine.booted == True:
                                     password = input("password:")
                                     if software.password == password:
+                                        print("Mot de passe correct")
                                         rules = subnet.firewall.rules
                                         print("Essai de connexion ssh à {}...".format(machine.IP_address))
                                         time.sleep(3)
@@ -61,11 +98,13 @@ def scenario(env, attaquant, speed):
                                         access = True
                                         if subnet.firewall.name != 'NULL':
                                             for rule in rules:
-                                                Rule = rule.split()
-                                                if ('i' in Rule[1] and 'SSH' in Rule[2] and 'ACCEPT' in Rule[3]) or ('ANY' in Rule[1] and 'SSH' in Rule[2] and 'ACCEPT' in Rule[3]):
-                                                    access = True
-                                                else:
+                                                L = rule.split()
+                                                if ("i" in L[1] and L[2] == 'SSH' and L[3] == 'REJECT' and L[4] == attaquant.machine.subnet.IP_range):
                                                     access = False
+                                                    print('Connexion bloquée par firewall.')
+                                                else:
+                                                    access = True
+
                                         if access == True:
                                             print("Connexion ssh réussie à {}".format(machine.IP_address))
                                             while True:
@@ -78,6 +117,24 @@ def scenario(env, attaquant, speed):
                                                 if 'shutdown' in H:
                                                     machine.shutdown()
                                                     break
+                                                if 'exploit' in H:
+                                                    exploit(H, machine)
+                                                if 'router' in H:
+                                                    if "i" in H[1]:
+                                                        for subnet in machine.subnet.router.subnetsin:
+                                                            print(subnet.IP_range)
+                                                    if "o" in H[1]:
+                                                        for subnet in machine.subnet.router.subnetsout:
+                                                            print(subnet.IP_range)
+                                                if 'firewall' in H and (machine.name != "NULL"):
+                                                    if H[1] == 'delete' and H[3] == 'rule':
+                                                        if H[2] == 'NETCAT':
+                                                            for rule in machine.rules:
+                                                                if 'NETCAT' in rule:
+                                                                    machine.removeRule(rule)
+
+                                                    else:
+                                                        print("un argument qui manque à votre commande. Voir <help>.")
 
                                                 if 'list_machines' in H:
                                                     for node in machine.subnet.components:
@@ -102,6 +159,8 @@ def scenario(env, attaquant, speed):
                                                                                 break
                                                                             if 'reboot' in S:
                                                                                 submachine.reboot()
+                                                                            if 'exploit' in S:
+                                                                                exploit(S, submachine)
                                                                     else:
                                                                         print("mot de passe érroné. Connexion ssh non permise.")
 
@@ -128,24 +187,8 @@ def scenario(env, attaquant, speed):
                 logging.debug("La liste des softwares pour la machine {} trouvée est : {}".format(L[1], H))
 
             if 'exploit' in L:
-                for subnet in subnets:
-                    for node in subnet.components:
-                        if node.IP_address == L[2]:
-                            for software in node.installed_software:
-                                time.sleep(1)
-                                yield env.timeout(speed)
-                                if software.name == L[1]:
-                                    for vuln in node.vulnerabilities:
-                                        if vuln.software == software.name:
-                                            print("action : {}".format(vuln.action))
-                                            node.rights = software.accessRight
-                                            logging.debug("Les droits sur la machine {} sont : {}".format(node.name, node.rights))
-
-                            if (subnet.sonde != "NULL"):
-                                rules = subnet.sonde.rules.split(',')
-                                for rule in rules:
-                                    if 'DETECT DISTANT EXPLOIT' in rule:
-                                        subnet.sonde.alert("la machine  {}  du sous-réseau {} est en train d'être exploitée.".format(node.IP_address, subnet.IP_range))
+                yield env.timeout(speed)
+                exploit(L, attaquant.machine)
 
             if 'root' in L:  # rendre root les droits sur un software
                 for node in attaquant.machine.subnet.components:
@@ -173,7 +216,7 @@ def scenario(env, attaquant, speed):
 
             if 'scan_machines' in L:  # découvrir les machines sur un sous-réseau
                 H = []
-                for subnet in subnets:
+                for subnet in Subnets:
                     if subnet.IP_range == L[2]:
                         if ("s" in L[1]):
                             time.sleep(2)
@@ -186,7 +229,7 @@ def scenario(env, attaquant, speed):
                                 yield env.timeout(speed)
                                 print("{}:{}".format(node.name, node.IP_address))
                                 H.append(node.name)
-                            rules = subnet.sonde.rules.split(',')
+                            rules = subnet.sonde.rules
                             if (subnet.sonde != "NULL"):
                                 for rule in rules:
                                     if 'DETECT FAST SCAN' in rule:
@@ -232,7 +275,7 @@ def scenario(env, attaquant, speed):
                     yield env.timeout(speed)
                     print(attaquant.machine.rights)
                 else:
-                    for subnet in subnets:
+                    for subnet in Subnets:
                         for node in subnet.components:
                             if node.IP_address == L[1]:
                                 if node.booted == True:
@@ -246,7 +289,7 @@ def scenario(env, attaquant, speed):
                     print(attaquant.machine.shutdown())
                     break
                 else:
-                    for subnet in subnets:
+                    for subnet in Subnets:
                         for node in subnet.components:
                             if node.IP_address == L[1]:
                                 if node.rights == 'root':
@@ -260,7 +303,7 @@ def scenario(env, attaquant, speed):
                     print(attaquant.machine.reboot())
                     break
                 else:
-                    for subnet in subnets:
+                    for subnet in Subnets:
                         for node in subnet.components:
                             if node.IP_address == L[1]:
                                 if node.rights == 'root':

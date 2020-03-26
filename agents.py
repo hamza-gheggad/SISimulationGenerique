@@ -209,6 +209,7 @@ class Firewall(Machine):
 
     def removeRule(self, rule):
         self.rules.remove(rule)
+        print("{} a été supprimée".format(rule))
         logging.debug("La règle <{}> est ajoutée au parfeu de {}.".format(rule, self.name))
 
     def setRules(self, rules):
@@ -221,6 +222,7 @@ class Server(Victim_Machine):
         self.os = os
         self.subnet = subnet
         self.IP_address = IP_address
+        self.vulnerabilities = vulnerabilities
         self.rights = rights
         self.installed_software = installed_software
         self.host_sonde = host_sonde
