@@ -163,7 +163,7 @@ config['ftpServerMachineB'] = {
     'name': 'ftpserver',
     'os': 'Debian',
     'IP_address': '62.212.118.155',
-    'installed_software': 'Apache2',
+    'installed_software': 'Apache2 ftp-software',
     'vulnerabilities': 'apache2_vuln ftp_vuln',
     'booted': 'True',
     'rights': 'user',
@@ -290,7 +290,7 @@ config['Guacamole-0.6.2-software'] = {
 config['ftp-software'] = {
     'name': 'ftp-software',
     'version': '0.0',
-    'accessRight': 'user'
+    'accessRight': 'root'
 }
 
 config['fp30reg.dll-software'] = {

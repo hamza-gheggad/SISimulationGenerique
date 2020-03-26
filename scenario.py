@@ -24,6 +24,7 @@ def exploit(L, machine):
                         time.sleep(1)
                         if software.name == L[1]:
                             for vuln in node.vulnerabilities:
+                                print(vuln.software, software.name)
                                 if vuln.software == software.name:
                                     print("action : {}".format(vuln.action))
                                     node.rights = software.accessRight
@@ -33,14 +34,66 @@ def exploit(L, machine):
                                         for software in node.installed_software:
                                             if "SSH" in software.name:
                                                 software.password = new_password
-                                    if vuln.software == 'ftp-software':
-                                        print('')
 
         if (subnet.sonde != "NULL"):
             rules = subnet.sonde.rules
             for rule in rules:
                 if 'DETECT DISTANT EXPLOIT' in rule:
                     subnet.sonde.alert("La machine  {}  du sous-réseau {} est en train d'être exploitée.".format(node.IP_address, subnet.IP_range))
+
+
+def whoami(L, machine):
+    if len(L) == 1:
+        print(machine.rights)
+    else:
+        for subnet in Subnets:
+            for node in subnet.components:
+                if node.IP_address == L[1]:
+                    if node.booted == True:
+                        print(node.rights)
+                    else:
+                        print("{} est arrêtée.".format(node.IP_address))
+
+
+def scan_services(L):
+    H = []
+    for subnet in Subnets:
+        for node in subnet.components:
+            if node.IP_address == L[1]:
+                if (node.host_sonde.name != "NULL"):
+                    rules = node.host_sonde.rules.split(',')
+                    for rule in rules:
+                        if 'DETECT SERVICE SCAN' in rule:
+                            node.host_sonde.alert("Scan détecté! les services de la machine {} sont en train d'être scannés.".format(node.name))
+                else:
+                    for software in node.installed_software:
+                        time.sleep(1)
+                        print(software.name)
+                        H.append(software.name)
+
+    logging.debug("La liste des softwares pour la machine {} trouvée est : {}".format(L[1], H))
+
+
+def scan_machines(L):
+    H = []
+    for subnet in Subnets:
+        if subnet.IP_range == L[2]:
+            if ("s" in L[1]):
+                time.sleep(2)
+                for node in subnet.components:
+                    print("{}:{}".format(node.name, node.IP_address))
+                    H.append(node.name)
+            if 'f' in L[1]:
+                for node in subnet.components:
+                    print("{}:{}".format(node.name, node.IP_address))
+                    H.append(node.name)
+                rules = subnet.sonde.rules
+                if (subnet.sonde != "NULL"):
+                    for rule in rules:
+                        if 'DETECT FAST SCAN' in rule:
+                            subnet.sonde.alert("le sous-réseau {} est en train d'être scanné.".format(subnet.IP_range))
+
+    logging.debug("Les machines du sous-réseau {} sont {}".format(subnet.IP_range, H))
 
 
 def main():
@@ -135,12 +188,20 @@ def scenario(env, attaquant, speed):
 
                                                     else:
                                                         print("un argument qui manque à votre commande. Voir <help>.")
+                                                if 'scan_machines' in H:  # découvrir les machines sur un sous-réseau
+                                                    scan_machines(H)
+                                                if 'whoami' in H:
+                                                    whoami(H, machine)
 
-                                                if 'list_machines' in H:
+                                                if 'scan_services' in H:
+                                                    scan_services(H)
+
+                                                if 'list_subnet_machines' in H:
                                                     for node in machine.subnet.components:
                                                         time.sleep(1)
                                                         yield env.timeout(speed)
                                                         print("{}:{}".format(node.name, node.IP_address))
+
                                                 if 'ssh' in H[0] and '@' in H[1]:
                                                     for submachine in machine.subnet.components:
                                                         if submachine.IP_address in H[1] and submachine.name in H[1] and submachine.booted == True:
@@ -159,8 +220,19 @@ def scenario(env, attaquant, speed):
                                                                                 break
                                                                             if 'reboot' in S:
                                                                                 submachine.reboot()
+                                                                            if 'whoami' in S:
+                                                                                whoami(S, submachine)
+                                                                            if 'scan_services' in S:
+                                                                                scan_services(S)
                                                                             if 'exploit' in S:
                                                                                 exploit(S, submachine)
+                                                                            if 'router' in S:
+                                                                                if "i" in S[1]:
+                                                                                    for subnet in submachine.subnet.router.subnetsin:
+                                                                                        print(subnet.IP_range)
+                                                                                if "o" in H[1]:
+                                                                                    for subnet in submachine.subnet.router.subnetsout:
+                                                                                        print(subnet.IP_range)
                                                                     else:
                                                                         print("mot de passe érroné. Connexion ssh non permise.")
 
@@ -168,23 +240,8 @@ def scenario(env, attaquant, speed):
                                         print("mot de passe érroné. Connexion ssh non permise.")
 
             if 'scan_services' in L:
-                H = []
-                for subnet in Subnets:
-                    for node in subnet.components:
-                        if node.IP_address == L[1]:
-                            if (node.host_sonde.name != "NULL"):
-                                rules = node.host_sonde.rules.split(',')
-                                for rule in rules:
-                                    if 'DETECT SERVICE SCAN' in rule:
-                                        node.host_sonde.alert("Scan détecté! les services de la machine {} sont en train d'être scannés.".format(node.name))
-                            else:
-                                for software in node.installed_software:
-                                    time.sleep(1)
-                                    yield env.timeout(speed)
-                                    print(software.name)
-                                    H.append(software.name)
-
-                logging.debug("La liste des softwares pour la machine {} trouvée est : {}".format(L[1], H))
+                yield env.timeout(speed)
+                scan_services(L)
 
             if 'exploit' in L:
                 yield env.timeout(speed)
@@ -215,27 +272,8 @@ def scenario(env, attaquant, speed):
                             print("Vous n'avez pas les droits nécessaires.")
 
             if 'scan_machines' in L:  # découvrir les machines sur un sous-réseau
-                H = []
-                for subnet in Subnets:
-                    if subnet.IP_range == L[2]:
-                        if ("s" in L[1]):
-                            time.sleep(2)
-                            for node in subnet.components:
-                                yield env.timeout(speed)
-                                print("{}:{}".format(node.name, node.IP_address))
-                                H.append(node.name)
-                        if 'f' in L[1]:
-                            for node in subnet.components:
-                                yield env.timeout(speed)
-                                print("{}:{}".format(node.name, node.IP_address))
-                                H.append(node.name)
-                            rules = subnet.sonde.rules
-                            if (subnet.sonde != "NULL"):
-                                for rule in rules:
-                                    if 'DETECT FAST SCAN' in rule:
-                                        subnet.sonde.alert("le sous-réseau {} est en train d'être scanné.".format(subnet.IP_range))
-
-                logging.debug("Les machines du sous-réseau {} sont {}".format(subnet.IP_range, H))
+                yield env.timeout(speed)
+                scan_machines(L)
 
             if 'get_version' in L:
                 for node in attaquant.machine.subnet.components:
@@ -271,17 +309,7 @@ def scenario(env, attaquant, speed):
                             logging.debug("os de {} est : {}".format(node.name, node.os))
 
             if 'whoami' in L:
-                if len(L) == 1:
-                    yield env.timeout(speed)
-                    print(attaquant.machine.rights)
-                else:
-                    for subnet in Subnets:
-                        for node in subnet.components:
-                            if node.IP_address == L[1]:
-                                if node.booted == True:
-                                    print(node.rights)
-                                else:
-                                    print("{} est arrêtée.".format(node.IP_address))
+                whoami(L, attaquant.machine)
 
             if 'shutdown' in L:
                 if len(L) == 1:
